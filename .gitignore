@@ -1,0 +1,4 @@
+node_modules
+*.log
+bundles
+examples/**/index.bundle.js

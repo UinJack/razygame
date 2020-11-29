@@ -1,0 +1,20 @@
+{
+  "name": "razygame",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack --config webpack.config.js --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "hammerjs": "^2.0.8",
+    "socket.io": "^3.0.3",
+    "socket.io-client": "^3.0.3",
+    "webpack-cli": "^4.2.0"
+  },
+  "devDependencies": {
+    "webpack": "^5.9.0"
+  }
+}
