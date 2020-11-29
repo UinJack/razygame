@@ -4,8 +4,6 @@ const http = require("http"),
     fs = require("fs"),
     port = process.argv[2] || 8888;
 
-    // 1 引入模块
-var io = require('socket.io')(http);
 
 http.createServer(function(request, response) {
 
@@ -38,6 +36,15 @@ http.createServer(function(request, response) {
   });
 }).listen(parseInt(port, 10));
 
+
+var io = require('socket.io')(http,{
+    path: '/test',
+    serveClient: false,
+    // below are engine.IO options
+    pingInterval: 10000,
+    pingTimeout: 5000,
+    cookie: false
+});
 
 
 

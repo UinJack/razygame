@@ -16,7 +16,6 @@ var mc = new Hammer.Manager(canvas);
 mc.add( new Hammer.Pan({}) );
 mc.add( new Hammer.Tap({}) );
 
-
 mc.on("panstart", startDraw);
 mc.on("panmove", draw);
 mc.on("panend", draw);
@@ -58,7 +57,11 @@ function endDraw(event){
 }
 
 
-var socket = io();
+const socket = io('ws://localhost:8888/test');
+
+socket.on('connect', function(){});
+socket.on('event', function(data){});
+socket.on('disconnect', function(){});
 
 
 socket.emit('chat message','123');
