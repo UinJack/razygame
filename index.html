@@ -9,10 +9,18 @@
 			height:100%;
 			margin:0;
 		}
+		.btn{
+			position: absolute;
+		}
+		#clear-btn{
+			right: 0px
+		}
 	</style>
 </head>
 <body>
-	<canvas id='draw-board' width="500px" height="500px">
+	<a id="draw-btn" class='btn'>开始绘制</a>
+	<a id="clear-btn" class='btn'>清空画布</a>
+	<canvas id='draw-board'>
 		
 	</canvas>
 </body>

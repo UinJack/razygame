@@ -1,56 +1,63 @@
-const http = require("http"),
-    url = require("url"),
-    path = require("path"),
-    fs = require("fs"),
-    port = process.argv[2] || 8888;
+const express = require("express");
+const io = require("socket.io");
+const app = express();
 
 
-http.createServer(function(request, response) {
+const clients = []
+const connectionList = []
+let currentIndex = 0
+app.use(express.static('./'));
+app.get('/index.htm', function (req, res) {
+    res.sendFile(__dirname + "/" + "index.htm");
+})
+var server = app.listen(3000, function () {
+    console.log("应用实例，访问地址为http://127.0.0.1:3000")
+})
 
-  var uri = url.parse(request.url).pathname
-    , filename = path.join(process.cwd(), uri);
+var sockets = io(server);//监听server
+sockets.on("connection",function(socket){
 
-  fs.exists(filename, function(exists) {
-    if(!exists) {
-      response.writeHead(404, {"Content-Type": "text/plain"});
-      response.write("404 Not Found\n");
-      response.end();
-      return;
-    }
+  console.log(socket.client.id)
+  clients.push(socket.client)
+  connectionList.push(socket)
+  console.log("初始化成功！下面可以用socket绑定事件和触发事件了");
+  const commandList = []
+  socket.on("send",function(data){
+    socket.broadcast.emit("getMsg", data );
+  })
 
-    if (fs.statSync(filename).isDirectory()) filename += '/index.html';
-
-    fs.readFile(filename, "binary", function(err, file) {
-      if(err) {        
-        response.writeHead(500, {"Content-Type": "text/plain"});
-        response.write(err + "\n");
-        response.end();
-        return;
+  socket.on("disconnect",function(data){
+    let delIndex = null
+    clients.find((item, i) => {
+      if(item.id === socket.client.id){
+        delIndex = i
+        return true
       }
+    }) 
 
-      response.writeHead(200,
-        {"Access-Control-Allow-Origin":"*"});
-      response.write(file, "binary");
-      response.end();
-    });
-  });
-}).listen(parseInt(port, 10));
+    if(delIndex != null){
+      clients.splice(delIndex, 1)  
+      connectionList.splice(delIndex, 1)
+    }
+  })
 
-
-var io = require('socket.io')(http,{
-    path: '/test',
-    serveClient: false,
-    // below are engine.IO options
-    pingInterval: 10000,
-    pingTimeout: 5000,
-    cookie: false
 });
 
 
+function sendWord(){
+  if( currentIndex < connectionList.length ){
+    connectionList[currentIndex].emit('word', 'test' + currentIndex)
+    currentIndex ++
+    setTimeout(() => {
+      sendWord()
+    }, 10000)
+  }else{
+   currentIndex = 0
+   connectionList[currentIndex].emit('word', 'test' + currentIndex)
+  }
+  
+}
 
-io.on('connection', (socket) => {
-  console.log('a user connected');
-});
-
-
-console.log("Static file server running at\n  => http://localhost:" + port + "/\nCTRL + C to shutdown");
+setTimeout(() => {
+  sendWord()
+}, 10000)
