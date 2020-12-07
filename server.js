@@ -26,6 +26,14 @@ sockets.on("connection",function(socket){
     socket.broadcast.emit("getMsg", data );
   })
 
+  socket.on("action",function(data){
+    if(data == 'start'){
+      console.log('开始游戏')
+      sendWord()
+    }
+  })
+
+
   socket.on("disconnect",function(data){
     let delIndex = null
     clients.find((item, i) => {
@@ -47,17 +55,20 @@ sockets.on("connection",function(socket){
 function sendWord(){
   if( currentIndex < connectionList.length ){
     connectionList[currentIndex].emit('word', 'test' + currentIndex)
+    if( currentIndex !== 0){
+       connectionList[currentIndex - 1].emit('word', 'end')
+    }
     currentIndex ++
     setTimeout(() => {
       sendWord()
     }, 10000)
   }else{
    currentIndex = 0
-   connectionList[currentIndex].emit('word', 'test' + currentIndex)
+   // connectionList[currentIndex].emit('word', 'test' + currentIndex)
   }
   
 }
 
-setTimeout(() => {
-  sendWord()
-}, 10000)
+// setTimeout(() => {
+//   sendWord()
+// }, 10000)

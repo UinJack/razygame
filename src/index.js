@@ -6,8 +6,12 @@ import io from 'socket.io-client';
 const canvas = document.getElementById('draw-board')
 const drawBtn = document.getElementById('draw-btn')
 const clearBtn = document.getElementById('clear-btn')
+const title = document.getElementById('title')
+
+
 drawBtn.onclick = function(){
-	console.log('aaaa')
+	// console.log('aaaa')
+	startGame()
 	loop()
 }
 clearBtn.onclick = function(){
@@ -24,7 +28,13 @@ var ctx=canvas.getContext("2d");
 var socket = io("ws://192.168.7.18:3000/"); //初始化websocket，连接服务端
 
 socket.on('word', (data)=>{
-	alert(data)
+
+	if(data === 'end'){
+		title.innerText = ''	
+	}else{
+		title.innerText = data
+	}
+	
 })
 
 const type = getQueryVariable('type') 
@@ -56,6 +66,11 @@ function loop(){
 	  	socket.emit("send", getBuffer())
 	  	loop()
 	}, 500)
+}
+
+function startGame(){
+	socket.emit("action", 'start')
+	
 }
 
 window.loop = loop
