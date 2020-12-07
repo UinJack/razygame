@@ -43,7 +43,7 @@ socket.on('word', (data)=>{
 		onDrawEnd()
 		title.innerText = `游戏结束了老铁`
 	}else{
-		title.innerText = `开始游戏了老铁，你要描述的词是${data}`
+		title.innerText = `开始游戏了老铁，你要描述的词是<${data}>`
 		onDraw()
 
 	}
