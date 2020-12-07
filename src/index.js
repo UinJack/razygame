@@ -6,13 +6,18 @@ import io from 'socket.io-client';
 const canvas = document.getElementById('draw-board')
 const drawBtn = document.getElementById('draw-btn')
 const clearBtn = document.getElementById('clear-btn')
+const clock = document.getElementById('clock')
 const title = document.getElementById('title')
+const count = document.getElementById('count')
+
+let isStop = false
+
+const serverPath = "ws://192.168.7.18:3000/"
+const time = 10 //绘制一个词的游戏时间单位s
 
 
 drawBtn.onclick = function(){
-	// console.log('aaaa')
 	startGame()
-	loop()
 }
 clearBtn.onclick = function(){
 	clear()
@@ -24,31 +29,53 @@ window.onload = function(){
 }
 
 var ctx=canvas.getContext("2d");
-
-var socket = io("ws://192.168.7.18:3000/"); //初始化websocket，连接服务端
-
-socket.on('word', (data)=>{
-
-	if(data === 'end'){
-		title.innerText = ''	
-	}else{
-		title.innerText = data
-	}
-	
-})
-
-const type = getQueryVariable('type') 
-if(type === 'draw'){
-	var mc = new Hammer.Manager(canvas);
-
+var socket = io( serverPath ); //初始化websocket，连接服务端
+var mc = new Hammer.Manager(canvas);
 	mc.add( new Hammer.Pan({}) );
 	mc.add( new Hammer.Tap({}) );
 
+socket.on('word', (data)=>{
+	if(data === 'end'){
+		title.innerText = ''	
+		onDrawEnd()
+	}else if(data === 'clear'){
+		clear()
+		onDrawEnd()
+		title.innerText = `游戏结束了老铁`
+	}else{
+		title.innerText = `开始游戏了老铁，你要描述的词是${data}`
+		onDraw()
+
+	}
+})
+
+socket.on('connect', () => {
+  console.log(socket.disconnected); // false
+});
+
+
+socket.on('count', (data)=>{
+	console.log(data); 
+	count.innerText = data
+})
+
+
+function onDraw(){
+	setTimeAlert(time)
+	isStop = false
+	clear()
+	socket.emit("send", getBuffer())
+	loop()
 	mc.on("panstart", startDraw);
 	mc.on("panmove", draw);
 	mc.on("panend", endDraw);
+}
 
-}else if(type === 'view'){
+function onDrawEnd(){
+	isStop = true
+	mc.off("panstart", startDraw);
+	mc.off("panmove", draw);
+	mc.off("panend", endDraw);
 	socket.on("getMsg", function (data) {
 		var img = new Image();
 		img.onload = function(){
@@ -59,12 +86,12 @@ if(type === 'draw'){
 	})
 }
 
-
 function loop(){
 	return setTimeout(() => {
-		// console.log(getBuffer())
 	  	socket.emit("send", getBuffer())
-	  	loop()
+	  	if(!isStop){
+	  		loop()
+	  	}
 	}, 500)
 }
 
@@ -122,16 +149,16 @@ function endDraw(event){
 	enableDraw = false
 }
 
-function getQueryVariable(variable)
-{
-       var query = window.location.search.substring(1);
-       var vars = query.split("&");
-       for (var i=0;i<vars.length;i++) {
-               var pair = vars[i].split("=");
-               if(pair[0] == variable){return pair[1];}
-       }
-       return(false);
+function setTimeAlert( time ){
+	if( time > 0){
+		setTimeout(() => {
+		  clock.innerText = time
+		  time -= 1
+		  setTimeAlert(time)
+		}, 1000)
+	}else{
+		clock.innerText = ''
+	}
 }
-
 
 

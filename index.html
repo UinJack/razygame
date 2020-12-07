@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
 	<title>Razy-Game</title>
 	<style type="text/css">
 		html,body{
@@ -20,10 +21,23 @@
     		left: 50%;
 		    top: 0px;
 		}
+		#clock{
+			position: absolute;
+    		left: 20px;
+		    bottom: 20px;
+		    color:red;
+		}
+		#count{
+			position: absolute;
+    		left: 50%;
+		    bottom: 0px;
+		}
 	</style>
 </head>
 <body>
 	<h1 id="title"></h1>
+	<h1 id="count"></h1>
+	<h3 id="clock"></h3>
 	<a id="draw-btn" class='btn'>开始绘制</a>
 	<a id="clear-btn" class='btn'>清空画布</a>
 	<canvas id='draw-board'>
