@@ -13,7 +13,7 @@ const count = document.getElementById('count')
 let isStop = false
 
 const serverPath = "ws://192.168.7.18:3000/"
-const time = 10 //绘制一个词的游戏时间单位s
+const time = 60 //绘制一个词的游戏时间单位s
 
 
 drawBtn.onclick = function(){

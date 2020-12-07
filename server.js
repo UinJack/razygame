@@ -7,8 +7,8 @@ const app = express();
 * 相关参数配置
 **/
 
-const time = 10000 //绘制一个词的游戏时间单位ms
-const words = [1,2,3,4,5,6,7] //词语列表
+const time = 60 * 1000 //绘制一个词的游戏时间单位ms
+const words = ['跑','唱','喝','敲','吆喝','盯','踢','闻','听','摸'] //词语列表
 const port = 3000 //服务器端口
 
 
@@ -70,7 +70,7 @@ sockets.on("connection",function(socket){
 
 function sendWord(){
   if( currentIndex < connectionList.length ){
-    connectionList[currentIndex].emit('word', words[ currentIndex ] + currentIndex)
+    connectionList[currentIndex].emit('word', words[ currentIndex ] )
 
     const viewList = connectionList.filter(item=>item.id !== connectionList[currentIndex].id)
     viewList.forEach((item) => {
